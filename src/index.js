@@ -25,7 +25,7 @@ console.log(Name());
 class Hello extends React.Component{
 
     render(){
-        return  <div>test calss</div>
+        return  <div>test calss, hello react</div>
     }
 
 }
