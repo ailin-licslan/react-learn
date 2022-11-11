@@ -13,7 +13,7 @@ const title = (
 console.log(title);
 
 
-//函数组件
+//函数组件  方法名必须大写  
 function Name() {
     return (
         <div>test</div>
@@ -23,11 +23,22 @@ function Name() {
 console.log(Name());
 
 
-//类组件
+//类组件  有 state 值  动态可以改变的属性
 class Hello extends React.Component{
 
+
+    constructor(){
+
+        //ES6 要求
+        super()
+        //初始化
+        this.state = {
+            count : 0
+        }
+    }
+
     render(){
-        return  <div>test calss, hello react</div>
+        return  <div>test calss, hello react, 有状态的组件</div>
     }
 
 }
@@ -50,14 +61,14 @@ const list = (
     </ul>
 )
    
-
+console.log(list)
 
 //v17.0
 
 //ReactDOM.render(list, document.getElementById('root'))
 
 //React团队在3月29日新推出了React v18.0版本，现在npm 默认的就是18版本，而React 18 不再支持 ReactDOM.render，
-createRoot(document.getElementById('root')).render(list)
+createRoot(document.getElementById('root')).render(<Hello />)
 
 
 
