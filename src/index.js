@@ -24,7 +24,7 @@ console.log(Name());
 
 
 //类组件  有 state 值  动态可以改变的属性
-class Hello extends React.Component{
+class Hello extends React.Component {
 
 
     // constructor(){
@@ -40,11 +40,85 @@ class Hello extends React.Component{
 
     //上面写法可以简化为下面的
     state = {
-        count: 0
+        count: 0,
+        test: 'a'
     }
 
-    render(){
-        return  <div>test calss, hello react, 有状态的组件</div>
+
+    //错误写法  修改state  this.state.count +=1 
+
+
+    //数据驱动视图思想  先修改状态 再改变UI
+
+
+    //抽离 函数  
+
+    onIncrement() {
+
+        //如何处理事件绑定中的this 指向  
+
+        //1.箭头函数
+        //<button onClick={this.onIncrement()}> + 1</button>
+
+
+        //2.Function.prototype.bind()
+        //3.class 的实例方法
+
+        console.log("this object is ", this)
+
+        this.setState({
+            count: this.state.count + 1
+        })
+
+    }
+
+    constructor() {
+        super()
+        this.onIncrement = this.onIncrement.bind(this)
+    }
+
+    render() {
+        return (
+            <div>
+                test calss, hello react, 有状态的组件 count: {this.state.count}
+
+                {/* <button onClick={() => { this.setState({ count: this.state.count + 1 }) }}> + 1</button> */}
+
+
+                {/* 抽离函数  报错 this undefind */}
+                {/* <button onClick={this.onIncrement}> + 1</button> */}
+
+                {/* 1.箭头函数  写法可以的  */}
+                {/* <button onClick={() => this.onIncrement()}> + 1</button> */}
+
+
+                {/* 2.Function.prototype.bind() 可以的  */}
+                <button onClick={this.onIncrement}> + 1</button>
+
+
+                {/* 3.绑定实例 下面写法就可以   推荐使用哈  onIncrement=()=>{ 推荐使用的写法 }
+                
+                <button onClick={this.onIncrement}> + 1</button>
+
+                
+                onIncrement=()=> {
+
+        //如何处理事件绑定中的this 指向  
+
+        //3.class 的实例方法
+
+        console.log("this object is ", this)
+
+        this.setState({
+            count: this.state.count + 1
+        })
+
+    }
+                
+                */}
+
+            </div>
+        )
     }
 
 }
@@ -53,20 +127,20 @@ console.log(Hello)
 
 
 const songs = [
-    {id:1, name:'vue1'},
-    {id:2, name:'vue2'},
-    {id:3, name:'vue3'}
+    { id: 1, name: 'vue1' },
+    { id: 2, name: 'vue2' },
+    { id: 3, name: 'vue3' }
 ]
 
 
 const list = (
     <ul>
         {
-            songs.map(item=><li key={item.id}>{item.name}</li>)
+            songs.map(item => <li key={item.id}>{item.name}</li>)
         }
     </ul>
 )
-   
+
 console.log(list)
 
 //v17.0
