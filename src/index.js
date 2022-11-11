@@ -27,14 +27,20 @@ console.log(Name());
 class Hello extends React.Component{
 
 
-    constructor(){
+    // constructor(){
 
-        //ES6 要求
-        super()
-        //初始化
-        this.state = {
-            count : 0
-        }
+    //     //ES6 要求
+    //     super()
+    //     //初始化
+    //     this.state = {
+    //         count : 0
+    //     }
+    // }
+
+
+    //上面写法可以简化为下面的
+    state = {
+        count: 0
     }
 
     render(){
