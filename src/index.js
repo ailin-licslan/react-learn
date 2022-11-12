@@ -41,7 +41,9 @@ class Hello extends React.Component {
     //上面写法可以简化为下面的
     state = {
         count: 0,
-        test: 'a'
+        test: 'a',
+        txt: '',
+        city: 'wh'
     }
 
 
@@ -72,6 +74,29 @@ class Hello extends React.Component {
 
     }
 
+
+    //input输入框  受控组件
+    handleChange = (e) => {
+        this.setState({
+            txt: e.target.value
+        })
+    }
+
+
+    //富文本框 受控组件
+    handleContent = (e) => {
+        this.setState({
+            test: e.target.value
+        })
+    }
+
+    //handcity
+    handleCity = (e)=>{
+        this.setState({
+            city: e.target.value
+        })
+    }
+
     constructor() {
         super()
         this.onIncrement = this.onIncrement.bind(this)
@@ -80,10 +105,14 @@ class Hello extends React.Component {
     render() {
         return (
             <div>
-                test calss, hello react, 有状态的组件 count: {this.state.count}
+
+
+                <div>
+                    test calss, hello react, 有状态的组件 count: {this.state.count}
+                </div>
+
 
                 {/* <button onClick={() => { this.setState({ count: this.state.count + 1 }) }}> + 1</button> */}
-
 
                 {/* 抽离函数  报错 this undefind */}
                 {/* <button onClick={this.onIncrement}> + 1</button> */}
@@ -93,7 +122,37 @@ class Hello extends React.Component {
 
 
                 {/* 2.Function.prototype.bind() 可以的  */}
-                <button onClick={this.onIncrement}> + 1</button>
+
+                <hr></hr>
+
+                <div>
+                    <button onClick={this.onIncrement}> + 1</button>
+                </div>
+
+
+                <hr></hr>
+
+                <div>
+
+                    {/* 受控组件 */}
+                    输入： <input type="text" value={this.state.txt} onChange={this.handleChange} placeholder="pls input sth" />
+
+
+
+                </div>
+
+                <hr></hr>
+                <div>
+
+                    富文本：<textarea value={this.state.test} onChange={this.handleContent}></textarea>
+                </div>
+
+                <hr></hr>
+                <select value={this.state.city} onChange={this.handleCity}>
+                    <option value='sh'>上海</option>
+                    <option value='wh'>武汉</option>
+                    <option value='bj'>北京</option>
+                </select>
 
 
                 {/* 3.绑定实例 下面写法就可以   推荐使用哈  onIncrement=()=>{ 推荐使用的写法 }
@@ -124,6 +183,9 @@ class Hello extends React.Component {
 }
 console.log(Hello)
 
+
+//受控组件  React将state与表单值value绑定到一起，由state的值来控制表单元素的值
+//给表单绑定onchange 事件将表单的值设置为state的值   控制表单元素值的变化
 
 
 const songs = [
