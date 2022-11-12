@@ -43,7 +43,8 @@ class Hello extends React.Component {
         count: 0,
         test: 'a',
         txt: '',
-        city: 'wh'
+        city: 'wh',
+        isChecked: false
     }
 
 
@@ -91,11 +92,36 @@ class Hello extends React.Component {
     }
 
     //handcity
-    handleCity = (e)=>{
+    handleCity = (e) => {
         this.setState({
             city: e.target.value
         })
     }
+
+    //handleChecked
+    handleCheck = (e) => {
+        this.setState({
+            isChecked: e.target.checked
+        })
+    }
+
+
+
+    //优化上面的四种方法合为一个即可
+    handleForm = (e)=>{
+
+
+        const target = e.target
+
+        const name = target.name
+
+        const value = target.type === 'checkbox' ? target.checked : target.value
+
+        this.setState({
+            [name]:value
+        })
+    }
+
 
     constructor() {
         super()
@@ -135,7 +161,9 @@ class Hello extends React.Component {
                 <div>
 
                     {/* 受控组件 */}
-                    输入： <input type="text" value={this.state.txt} onChange={this.handleChange} placeholder="pls input sth" />
+                    {/* 输入： <input type="text" name="txt" value={this.state.txt} onChange={this.handleChange} placeholder="pls input sth" /> */}
+
+                    输入： <input type="text" name="txt" value={this.state.txt} onChange={this.handleForm} placeholder="pls input sth" />
 
 
 
@@ -144,15 +172,30 @@ class Hello extends React.Component {
                 <hr></hr>
                 <div>
 
-                    富文本：<textarea value={this.state.test} onChange={this.handleContent}></textarea>
+                    {/* 富文本：<textarea name='test' value={this.state.test} onChange={this.handleContent}></textarea> */}
+                    富文本：<textarea name='test' value={this.state.test} onChange={this.handleForm}></textarea>
+
                 </div>
 
                 <hr></hr>
-                <select value={this.state.city} onChange={this.handleCity}>
+                {/* <select name='city' value={this.state.city} onChange={this.handleCity}>
+                    <option value='sh'>上海</option>
+                    <option value='wh'>武汉</option>
+                    <option value='bj'>北京</option>
+                </select> */}
+
+
+                <select name='city' value={this.state.city} onChange={this.handleForm}>
                     <option value='sh'>上海</option>
                     <option value='wh'>武汉</option>
                     <option value='bj'>北京</option>
                 </select>
+
+
+                <hr></hr>
+                {/* 复选框 */}
+                {/* 复选框： <input name='isChecked' type="checkbox" checked={this.state.isChecked} onChange={this.handleCheck}></input> */}
+                复选框： <input name='isChecked' type="checkbox" checked={this.state.isChecked} onChange={this.handleForm}></input>
 
 
                 {/* 3.绑定实例 下面写法就可以   推荐使用哈  onIncrement=()=>{ 推荐使用的写法 }
