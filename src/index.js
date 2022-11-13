@@ -2,16 +2,35 @@ import React from 'react'
 //import  ReactDOM   from 'react-dom'
 import { createRoot } from 'react-dom/client'
 
-const name = 'LICSLAN'
 
+//0.React 基本使用写法
+const name = 'LICSLAN'
 //JXS 
 const title = (
     <h1>hello {name}, You are learning react!</h1>
 )
 console.log(title);
+const songs = [
+    { id: 1, name: 'vue1' },
+    { id: 2, name: 'vue2' },
+    { id: 3, name: 'vue3' }
+]
+console.log(songs);
+const list = (
+    <ul>
+        {
+            songs.map(item => <li key={item.id}>{item.name}</li>)
+        }
+    </ul>
+)
+console.log(list)
 
 
-//函数组件  方法名必须大写!!!
+
+
+
+
+//1.类组件  有 state 值  动态可以改变的属性   函数组件  方法名必须大写!!!  & 类组件
 function Name() {
     return (
         <div>test</div>
@@ -19,8 +38,8 @@ function Name() {
 }
 console.log(Name());
 
-
-//类组件  有 state 值  动态可以改变的属性
+//受控组件  React将state与表单值value绑定到一起，由state的值来控制表单元素的值
+//给表单绑定onchange 事件将表单的值设置为state的值   控制表单元素值的变化
 class Hello extends React.Component {
     // constructor(){
 
@@ -48,7 +67,6 @@ class Hello extends React.Component {
     //数据驱动视图思想  先修改状态 再改变UI
 
     //抽离 函数  
-
     onIncrement() {
 
         //如何处理事件绑定中的this 指向  
@@ -75,7 +93,6 @@ class Hello extends React.Component {
             txt: e.target.value
         })
     }
-
 
     //富文本框 受控组件
     handleContent = (e) => {
@@ -241,25 +258,6 @@ class Hello extends React.Component {
 }
 console.log(Hello)
 
-//受控组件  React将state与表单值value绑定到一起，由state的值来控制表单元素的值
-//给表单绑定onchange 事件将表单的值设置为state的值   控制表单元素值的变化
-
-
-const songs = [
-    { id: 1, name: 'vue1' },
-    { id: 2, name: 'vue2' },
-    { id: 3, name: 'vue3' }
-]
-
-
-const list = (
-    <ul>
-        {
-            songs.map(item => <li key={item.id}>{item.name}</li>)
-        }
-    </ul>
-)
-console.log(list)
 
 
 
@@ -268,8 +266,9 @@ console.log(list)
 
 
 
-// 小练习  APP 组件 使用受控组件 完成任务  map的遍历等
 
+
+//2.小练习  APP 组件 使用受控组件 完成任务  map的遍历等
 class App extends React.Component {
 
     //初始化 状态
@@ -334,7 +333,7 @@ class App extends React.Component {
         console.log(conmments, userName, content)
 
 
-        if (userName.trim()==='' || content.trim()===''){
+        if (userName.trim() === '' || content.trim() === '') {
             alert("Pls input content and username~")
             return
         }
@@ -351,10 +350,10 @@ class App extends React.Component {
         this.setState({
             conmments: newConmments,
             //清空文本框
-            userName:'',
-            content:''
+            userName: '',
+            content: ''
         })
-        console.log("=== The List length have no change here ======>",conmments, userName, content)
+        console.log("=== The List length have no change here ======>", conmments, userName, content)
     }
 
     render() {
@@ -397,11 +396,8 @@ class App extends React.Component {
                     </ul>
                 )} */}
 
-
-
+                {/* 优化抽出方法 */}
                 {this.renList()}
-
-
 
 
             </div>
@@ -412,23 +408,227 @@ class App extends React.Component {
     }
 
 }
-
 console.log(App)
 
 
 
 
-//v17.0
 
+
+
+
+
+
+
+//3.组件传值  props   组件是封闭的 要接收外部数据应该通过props来实现
+//a.props 作用： 接收传递给组件的值
+//b.传递数据 ： 给组件标签
+//c.接收数据： 函数组件是通过参数props接收数据 类组件通过this.props接收数据
+
+//函数组件 Test
+const Test = (props) => {
+    console.log(props)
+    return (
+        <div>
+            <h1>
+                props: {props.name},
+                age: {props.age}
+            </h1>
+        </div>
+    )
+
+}
+console.log(Test)
+
+class TestV2 extends React.Component {
+    //推荐写法 传props参数哈 
+    constructor(props) {
+
+        super(props)
+
+        console.log("test class comonent get props value: " + this.props.name)
+    }
+
+
+    render() {
+
+        console.log(this.props)
+
+        this.props.fn()
+
+        return (
+            <div>
+                <h1>
+                    props: {this.props.name}
+                    <br />
+                    age: {this.props.age}
+                    <br />
+                    colors: {this.props.colors}
+                    <br />
+                    div:{this.props.tag}
+                </h1>
+            </div>
+        )
+
+    }
+}
+console.log(TestV2)
+
+
+
+
+
+
+
+
+
+//4.组件通讯的三种方式
+//a.father ---> son
+//b. son ---> father
+//c. brother --> brother
+
+
+//a. 父传子  参数
+//1.父组件提供要传递的state参数 2.给子组件添加标签 比如name 值是state的值 3.子组件通过props接收父组件传递的参数
+class Parent extends React.Component {
+
+    state = {
+        lastName: 'LIN'
+    }
+
+    render() {
+        return (
+            <div className='parent'>
+
+                父组件使用Child子组件 并且传递了state中的lastName 参数给子组件Child name 赋值 this.state.lastName:
+                <Child name={this.state.lastName} />
+
+            </div>
+        )
+    }
+}
+console.log(Parent)
+const Child = (props) => {
+    console.log("==========父组件传过来的值：=========", props.name)
+    return (
+        <div className='child'>
+            <p>子组件接收父组件的数据: {props.name}</p>
+        </div>
+    )
+}
+
+
+//b. 子传父  参数
+//1.父组件提供回调函数 用于接收数据 2.将改函数作为属性值传递给子组件 3.子组件通过props调用回调函数
+class ParentV2 extends React.Component {
+
+    state = {
+        value: ''
+    }
+
+    getChildV2Msg = (msg) => {
+        console.log("接收到子组件传过来的参数=========>", msg)
+        this.setState({
+            value:msg
+        })
+    }
+
+    render() {
+        return (
+            <div className='parent'>
+
+                {/* 子组件 并且把父组件的回调函数传给子组件： */}
+                当前父组件拿到子组件的值是：{this.state.value}
+                <br />
+                <ChildV2 getMsg={this.getChildV2Msg} />
+
+            </div>
+        )
+    }
+}
+console.log(Parent)
+class ChildV2 extends React.Component {
+
+    state = {
+        childMsg: 'React learning....'
+    }
+
+
+    handleClick = () => {
+        this.props.getMsg(this.state.childMsg)
+    }
+
+    render() {
+        return (
+            <button onClick={this.handleClick}>
+                {/* 点我 给父组件传值 传 子组件中的state里面的 childMsg */}
+                当前子组件
+            </button>
+        )
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//v17.0 写法
 //ReactDOM.render(list, document.getElementById('root'))
+//React团队在3月29日新推出了React v18.0版本，现在npm 默认的就是18版本，而React 18 不再支持 ReactDOM.render， 使用createRoot
 
-//React团队在3月29日新推出了React v18.0版本，现在npm 默认的就是18版本，而React 18 不再支持 ReactDOM.render，
-
-//Hello 组件使用
+//1.Hello 组件使用 
 //createRoot(document.getElementById('root')).render(<Hello />)
 
-//App 组件使用 小练习
-createRoot(document.getElementById('root')).render(<App />)
+//2.App 组件使用 小练习  主要设计受控组件使用  setState 赋值 等功能   map 遍历
+//createRoot(document.getElementById('root')).render(<App />)
 
 
+//3.组件 传值 props 使用   类组件 Test  函数组件 TestV2 传递参数类型不做限制 String Number Objec Function JXS...  props只能读 不能写  
+//注意：使用类组件时 如果写了构造函数  应该将props传递给super() 否则无法在构造函数中获取到props  undefind
+//createRoot(document.getElementById('root')).render(<Test name="LICSLAN" age={19} />)
+//createRoot(document.getElementById('root')).render(<TestV2 name="LICSLANV2" age={20} colors={['a', 'read', 'green']} fn={() => { console.log("==function test==") }} tag={<p>xxxx</p>} />)
+
+
+//4.组件参数传递 
+//4.1 父传子
+//createRoot(document.getElementById('root')).render(<Parent />)
+
+//4.2 子传父
+createRoot(document.getElementById('root')).render(<ParentV2 />)
+
+//4.2 子传父 思路利用回调函数 父组件提供回调 子组件调用 将要传递的数据作为回调函数的参数 和 VUE 一样
 //ReactDOM.render(<Hello />, document.getElementById('root'))
