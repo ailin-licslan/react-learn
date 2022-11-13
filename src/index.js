@@ -483,10 +483,10 @@ console.log(TestV2)
 
 
 //4.组件通讯的三种方式
-//a.father ---> son
+//a. father ---> son
 //b. son ---> father
 //c. brother --> brother
-
+//d. 跨组件传递 Context
 
 //a. 父传子  参数
 //1.父组件提供要传递的state参数 2.给子组件添加标签 比如name 值是state的值 3.子组件通过props接收父组件传递的参数
@@ -529,7 +529,7 @@ class ParentV2 extends React.Component {
     getChildV2Msg = (msg) => {
         console.log("接收到子组件传过来的参数=========>", msg)
         this.setState({
-            value:msg
+            value: msg
         })
     }
 
@@ -546,7 +546,7 @@ class ParentV2 extends React.Component {
         )
     }
 }
-console.log(Parent)
+console.log(ParentV2)
 class ChildV2 extends React.Component {
 
     state = {
@@ -570,8 +570,96 @@ class ChildV2 extends React.Component {
 }
 
 
+//c. 兄弟组件传值  参数
+//1.将共享状态提升到最近的公共父组件中 由公共父组件管理这个状态  思想 ： 状态提升 公共父组件职责： 提供共享状态，提供共享状态的方法，要通讯的子组件只需要通过props接收状态或操作状态的方法
+class Counter extends React.Component {
+
+    //提供共享状态
+    state = {
+        count: 0
+    }
+
+    //父组件提供修改状态的方法
+    onIncrement = () => {
+        this.setState({
+            count: this.state.count + 1
+        })
+    }
+
+    render() {
+        return (<div>
+            {/* <h1>计数器：</h1>
+            <button>+1</button> */}
 
 
+            {/* 父到子通讯 */}
+            <Child1 count={this.state.count}></Child1>
+            <Child2 onIncrement={this.onIncrement}></Child2>
+
+
+        </div>)
+    }
+}
+console.log(Counter)
+
+const Child1 = (props) => {
+    return (<div>
+
+        <h1>计数器:  {props.count}</h1>
+
+    </div>)
+}
+console.log(Child1)
+
+const Child2 = (props) => {
+    return (<div>
+        <button onClick={() => props.onIncrement()}>+1</button>
+    </div>)
+}
+console.log(Child2)
+
+
+//d.跨组件传递 比如爷孙 ...
+//1.调用React.createContext()创建Provider  & Consumer 2 个组件  2.使用Provider 组件作为父节点
+
+
+//创建context 得到2个组件
+const { Provider, Consumer } = React.createContext()
+
+class AppList extends React.Component {
+
+    render() {
+        return (
+            <Provider value='LICSLAN'>
+                <div className='app'>
+                    <Node></Node>
+                </div>
+            </Provider>
+        )
+    }
+}
+
+const Node = (props) => {
+    return (<div className='node'>
+        <SubNode></SubNode>
+    </div>)
+}
+
+const SubNode = props => {
+    return (<div className='subNode'>
+        <Son></Son>
+    </div>)
+}
+
+const Son = props => {
+    return (
+        <Consumer>
+                {
+                    data => <span>我是子节点 Value is ： {data}</span>
+                }
+        </Consumer>
+    )
+}
 
 
 
@@ -628,7 +716,14 @@ class ChildV2 extends React.Component {
 //createRoot(document.getElementById('root')).render(<Parent />)
 
 //4.2 子传父
-createRoot(document.getElementById('root')).render(<ParentV2 />)
+//createRoot(document.getElementById('root')).render(<ParentV2 />)
+
+//4.3 兄弟组件
+//createRoot(document.getElementById('root')).render(<Counter />)
+
+//4.4 跨组件传递
+createRoot(document.getElementById('root')).render(<AppList />)
+
 
 //4.2 子传父 思路利用回调函数 父组件提供回调 子组件调用 将要传递的数据作为回调函数的参数 和 VUE 一样
 //ReactDOM.render(<Hello />, document.getElementById('root'))
