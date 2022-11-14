@@ -1,6 +1,8 @@
 import React from 'react'
 //import  ReactDOM   from 'react-dom'
 import { createRoot } from 'react-dom/client'
+import PropTypes from 'prop-types'
+
 
 
 //0.React 基本使用写法
@@ -638,6 +640,7 @@ class AppList extends React.Component {
         )
     }
 }
+console.log(AppList)
 
 const Node = (props) => {
     return (<div className='node'>
@@ -654,9 +657,9 @@ const SubNode = props => {
 const Son = props => {
     return (
         <Consumer>
-                {
-                    data => <span>我是子节点 Value is ： {data}</span>
-                }
+            {
+                data => <span>我是子节点 Value is ： {data}</span>
+            }
         </Consumer>
     )
 }
@@ -670,7 +673,61 @@ const Son = props => {
 
 
 
+//5.props 深入理解和使用
+//1.children 与 props 一样  可以是任意值  文本  react元素 JXS 组件 函数...
+const TestV3 = (props) => {
 
+    console.log("The children node is ", props)
+
+    return (<div>
+        <h1>组件标签的字节点：</h1>
+        {props.children}
+    </div>)
+}
+console.log(TestV3)
+
+//2.props 校验 创建组件时 指定props类型 格式  
+//安装包  npm install --save prop-types  导入 props-types  使用组件名.propTypes={} 给组件添加校验规则
+
+
+const TestV4 = (props) => {
+    props.fn()
+    const arr = props.colors
+    const lis = arr.map((item, index) => <li key={index}>{item}</li>)
+    return (<div><ul>
+        {lis}
+    </ul>
+    <button>Default value: {props.a}</button>
+    </div>)
+}
+
+//3.属性props 校验定义 必须是数组 推荐创建组件时   常见约束规则  array bool func number object string  
+//具体约束定义  查看官方文档  https://www.npmjs.com/package/prop-types
+TestV4.propTypes = {
+    colors: PropTypes.array,
+    a: PropTypes.number,
+    fn: PropTypes.func.isRequired,
+    tag: PropTypes.element,
+    filter: PropTypes.shape({
+        area: PropTypes.string,
+        price: PropTypes.number
+    })
+}
+
+//给props  传入默认值  在未传值时生效
+TestV4.defaultProps = {
+    a: 100
+}
+
+
+
+
+
+
+
+
+//6.组件的生命周期  意义：组件的生命周期有助于理解组件的运行方式  完成更加复杂的组件功能  分析组件错误原因
+//生命周期： 一个组件从被创建到挂载到页面运行  再到组件不用时卸载的过程  生命周期的每个阶段总是伴随着一些方法的调用  这些方法就是生命周期的钩子函数  （同VUE 很像  感觉像是谁在模仿或者借鉴谁 ^_^）
 
 
 
@@ -715,15 +772,21 @@ const Son = props => {
 //4.1 父传子
 //createRoot(document.getElementById('root')).render(<Parent />)
 
-//4.2 子传父
+//4.2 子传父  子传父 思路利用回调函数 父组件提供回调 子组件调用 将要传递的数据作为回调函数的参数 和 VUE 一样
 //createRoot(document.getElementById('root')).render(<ParentV2 />)
 
 //4.3 兄弟组件
 //createRoot(document.getElementById('root')).render(<Counter />)
 
 //4.4 跨组件传递
-createRoot(document.getElementById('root')).render(<AppList />)
+// createRoot(document.getElementById('root')).render(<AppList />)
+
+//5.1 props  children 
+//createRoot(document.getElementById('root')).render(<TestV3><p>I'm the children node</p></TestV3>)
+
+//5.2 propTypes   Failed prop type: Invalid prop `colors` of type `number` supplied to `TestV4`, expected `array`.  arr.map is not a function
+//createRoot(document.getElementById('root')).render(<TestV4 colors={18}/>)
+createRoot(document.getElementById('root')).render(<TestV4 colors={[18, 19]} fn={()=>{console.log("pls print LICSLAN")}} a={1000}/>)
 
 
-//4.2 子传父 思路利用回调函数 父组件提供回调 子组件调用 将要传递的数据作为回调函数的参数 和 VUE 一样
 //ReactDOM.render(<Hello />, document.getElementById('root'))
