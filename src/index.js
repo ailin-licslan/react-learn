@@ -1352,6 +1352,9 @@ console.log("cvcvvsfdfdasfdsfd================",newObj===object)
 //React原理揭秘  
 //1.工作角度  应用第一  原理第二
 //2. state异步更新
+//3.父组件更新导致子组件更新 纯组件提升性能
+//4.虚拟DOM ==>  state + JSX
+//5.虚拟DOM 不是正在的DOM 虚拟DOM可以让react脱离浏览器的束缚 使其跨平台应用提供了保障  开发react 是面向虚拟DOM 开发  react native --> 安卓 / IOS 
 
 
 
