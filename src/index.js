@@ -1123,7 +1123,7 @@ function withMouse(WarppedComponent) {
         }
 
         render() {
-            console.log("=========xxxxxxxxxxx=========",this.props)
+            console.log("=========xxxxxxxxxxx=========", this.props)
             //props state 一起传递 避免 props丢失问题
             return <WarppedComponent {...this.state} {...this.props}></WarppedComponent>;
         }
@@ -1174,6 +1174,7 @@ class HighComponent extends React.Component {
         </div>)
     }
 }
+console.log(HighComponent)
 
 
 
@@ -1190,7 +1191,167 @@ class HighComponent extends React.Component {
 //d.对组件进行性能优化
 //f.虚拟DOM & Diff算法
 
+class StateUnderstanding extends React.Component {
 
+    state = {
+        count: 0
+    }
+    handleClick = () => {
+
+        //此处更新是异步的 因为下面的打印的值 是+1之前的值
+        // this.setState({
+        //     count: this.state.count + 1
+        // })
+        // console.log("state.count: ", this.state.count )
+
+
+        // this.setState({
+        // console.log('第二次调用count不会状态改变: ', state)    
+        //     count: this.state.count + 1
+        // })
+        // console.log("state.count222: ", this.state.count )
+
+
+        //推荐更新state 语法写法 但也是异步更新  state props 都表示最新的了 这种写法 回调函数写法
+        this.setState((state, props) => {
+            return {
+                count: state.count + 1
+            }
+        })
+
+
+        this.setState((state, props) => {
+            console.log('第二次调用状态会改变: ', state)
+            return {
+                count: state.count + 1
+            }
+        },
+            //第二个参数 状态更新后并且重新渲染后立即执行
+            () => {
+
+                //componentUpdate 钩子函数相似这里触发时机  dom渲染完成后触发发
+                console.log("状态更新完成", this.state.count)
+                console.log("xxxxxxxxxxx", document.getElementById('title').innerHTML)
+                document.title = "modify title "+ this.state.count
+            })
+        console.log("state.count: ", this.state.count)
+
+
+    }
+
+
+
+
+    render() {
+        return <div>
+            <h1 id='title'>计数器：{this.state.count}</h1>
+            <button onClick={this.handleClick}>+1</button>
+        </div>
+    }
+}
+console.log(StateUnderstanding)
+
+
+//组件更新机制  1.修改state 2.更新组件UI
+//过程： 父组件重新渲染时 也会重新渲染子组件 但只会渲染当前子组件树(当前组件及其所有子组件)  根组件更新  那么所有的子组件都会更新的 
+
+//组件性能优化  
+//1.减轻state  state只存储跟组件渲染相关的数据 注意：不用做渲染的数据不要放在state中 比如定时器ID等,对于这种需要在多个方法中用到的数据应该放在this中
+//2.避免不必要的重新渲染  父组件更新引起子组件更新 问题 如果子组件没有任何地方变化时也会被重新渲染 这个有必要吗？ 如何避免不必要的渲染呢？ 
+//FIX： shouldComponentUpdate(nextProps,nextState)钩子函数 通过此函数返回值判断是否需要重新渲染 true表示需要  false表示不需要 
+//shouldComponentUpdate 触发时机 更新阶段的钩子函数 组件重新渲染前执行
+class TimeTest extends React.Component {
+    state = {
+        count: 0,
+        number:0
+    }
+    handleClick = () => {
+        console.log("=========================")
+        this.setState(state => {
+            return {
+                count: state.count + 1
+            }
+        })
+    }
+
+    handleNumber = () => {
+        console.log("=========================")
+        this.setState(state => {
+            return {
+                number: Math.floor(Math.random()*5)
+            }
+        })
+    }
+
+
+    //最新的props  最新的state  避免不必要的重新渲染   shouldComponentUpdate 先执行  再执行 render
+    shouldComponentUpdate(nextProps,nextState){
+
+        console.log("nextState, nextProps, thisState=====", nextState,nextProps,this.state)
+        //false 阻止 render 渲染
+        //return false
+
+
+
+        //如果生成随机数前后2次相同的话 就控制不执行render()
+        if (this.state.number===nextState.number){
+            return false
+        }
+
+        return true
+    }
+
+    render() {
+
+        console.log('组件更新了~~~')
+
+        return (<div>
+            <h1>计数器：{this.state.count}</h1>
+            <button onClick={this.handleClick}>+1</button>
+            <br></br>
+
+            {/* <h2>随机数：{this.state.number}</h2>   */}
+            <NumberTest number={this.state.number}/>
+            <button onClick={this.handleNumber}>重新生成</button>
+           
+        </div>)
+    }
+}
+
+class NumberTest extends React.Component{
+
+
+    shouldComponentUpdate(nextProps){
+        if(nextProps.number!==this.props.number){return true} 
+        return false
+
+    }
+
+    render(){
+        console.log("子组件中的render~~~~~~")
+        return (<h2>随机数：{this.props.number}</h2>  )
+    }
+}
+
+//3.纯组件和ReactComponent功能相似  区别 purecomponent内部自动实现了shouldComponentUpdate钩子函数 不需要手动比较
+//原理：纯组件通过分别对比state props的值  来决定是否渲染新组件
+//使用非常简单  创建组件时 改成  class TimeTest extends React.PureComponent 即可   纯组件内部的对比是浅层对比  shallow compare 
+//shallow compare  值类型对比 比较2个值是否相同即可   对于引用类型来说  只比较对象的引用地址是否相同
+//注意： state or props 属性为引用类型时  应该创建新数据 不要直接修改原数据！！！    引用类似推荐对比的时候是去创建新的对象哈 
+const object = {a:0}
+const newObj = object
+newObj.a = 5
+console.log("cvcvvsfdfdasfdsfd================",newObj===object)
+
+
+
+//虚拟DOM & DIFF 算法  React 如何做到部分更新的呢   （虚拟DOM & DIFF 算法）
+//虚拟DOM （React 元素） 本质上是一个JS对象用来描叙你希望在屏幕上看到的内容UI  
+//组件render()调用后 根据状态和JSX结构生成虚拟DOM 对象
+
+//React原理揭秘  
+//1.工作角度  应用第一  原理第二
+//2. state异步更新
 
 
 
@@ -1249,7 +1410,9 @@ class HighComponent extends React.Component {
 //7.组件复用 props render模式   高阶组件 High order component(包装模式增强组件功能)
 // createRoot(document.getElementById('root')).render(<Lin />)
 // createRoot(document.getElementById('root')).render(<Linchildren />)
-createRoot(document.getElementById('root')).render(<HighComponent />)
+//createRoot(document.getElementById('root')).render(<HighComponent />)
+//createRoot(document.getElementById('root')).render(<StateUnderstanding />)
+createRoot(document.getElementById('root')).render(<TimeTest tag={1} />)
 
 
 
