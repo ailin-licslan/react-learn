@@ -2,7 +2,10 @@ import React from 'react'
 //import  ReactDOM   from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import PropTypes from 'prop-types'
+import img from './images/pic.jpg'
 
+
+//React study proccess record and for review in the future.
 
 
 //0.React 基本使用写法
@@ -697,7 +700,7 @@ const TestV4 = (props) => {
     return (<div><ul>
         {lis}
     </ul>
-    <button>Default value: {props.a}</button>
+        <button>Default value: {props.a}</button>
     </div>)
 }
 
@@ -727,7 +730,450 @@ TestV4.defaultProps = {
 
 
 //6.组件的生命周期  意义：组件的生命周期有助于理解组件的运行方式  完成更加复杂的组件功能  分析组件错误原因
-//生命周期： 一个组件从被创建到挂载到页面运行  再到组件不用时卸载的过程  生命周期的每个阶段总是伴随着一些方法的调用  这些方法就是生命周期的钩子函数  （同VUE 很像  感觉像是谁在模仿或者借鉴谁 ^_^）
+//生命周期： 一个组件从被创建到挂载到页面运行  再到组件不用时卸载的过程  
+//生命周期的每个阶段总是伴随着一些方法的调用  这些方法就是生命周期的钩子函数  （同VUE 很像  感觉像是谁在模仿或者借鉴谁 ^_^）
+//钩子函数的作用 为开发人员在不同阶段操作组件提供了时机
+//只有类组件才有生命周期 ！！！ 可以让页面动起来  函数组件不可以
+//1.创建时  （挂载阶段） 执行时机 组件创建时 （页面加载时） constructor(创建时) --> render(创建时+更新时)  -->componentDidMount(卸载时)  
+//constructor(创建时):  初始化state 为事件处理程序绑定this
+//render(创建时+更新时)：每次组件渲染都会触发 渲染UI  注意：不能调用 setState() 递归更新 报错！
+//componentDidMount(卸载时): 组件挂载后 完成DOM 渲染 发送网络请求 和 DOM 操作
+//钩子函数componentDidMount()
+
+class LifeCycle extends React.Component {
+
+    constructor(props) {
+
+        super(props)
+
+        this.state = {
+            count: 0,
+            value: 'xxxxx'
+        }
+
+        console.log('1.生命周期钩子函数： constructor')
+
+        const title = document.getElementById('LICSLAN')
+
+        //拿不到的哈 null  不可以操作 DOM   只能在componentDidMount操作哈  记住了 
+        console.log("constructor title is :", title)
+    }
+
+
+    //钩子函数
+    componentDidMount() {
+
+        //前端断点调试
+        debugger
+
+        const title = document.getElementById('LICSLAN').innerHTML
+
+        console.log("componentDidMount title is :", title)
+
+        this.setState({
+            //因为修改了 state 就会触发  render() 钩子函数
+            value: title
+        })
+
+        //操作DOM 演示
+        console.log('3.生命周期钩子函数： componentDidMount')
+
+
+        //可以发送Ajax 请求  请求后端数据哈  记住了    VUE 生命周期里面有好几次可以发送Ajax 请求
+    }
+
+    render() {
+
+
+        //拿不到的哈 null  不可以操作 DOM   只能在componentDidMount操作哈  记住了 
+
+        const title = document.getElementById('LICSLAN')
+
+        console.log("render title is :", title)
+
+        console.log('2.生命周期钩子函数： render')
+
+        return (<div>
+            <h1 id='LICSLAN'>统计豆豆被打的次数</h1>
+            <button id='btn'>打豆豆</button>
+            <p>hi : {this.state.value}</p>
+        </div>)
+    }
+
+}
+console.log("constructor title is :", LifeCycle)
+
+
+//2.更新时  钩子函数componentDidUpdate() 
+//三种情况触发 render方法执行 组件接收新属性 props 会重新渲染  setState()时会重新渲染  forceUpdate()时也会重新渲染
+//执行顺序  先执行 render() ---> 再执行componentDidUpdate()
+//render 每次组件渲染都会触发 渲染UI 和 挂载阶段是相同的render
+//componentDidUpdate  可以发送网络请求 Ajax 可以操作DOM 如果要setState() 必须放在一个if条件中  和挂载时不一样 挂载阶段不可以使用 setState()!!!!
+
+class LifeCycleV2 extends React.Component {
+
+    constructor() {
+        super()
+        this.state = {
+            count: 0
+        }
+    }
+
+    handleClick = () => {
+
+        //state 更新时   render 也会执行
+        this.setState({
+            count: this.state.count + 1
+        })
+
+        //此时 forUpdate()时 render 也会执行
+        //this.forceUpdate()
+    }
+
+    render() {
+
+        console.log("属性state 更新时 生命周期钩子函数 render会执行render")
+        return (<div>
+            <CounterX count={this.state.count}></CounterX>
+            <button onClick={this.handleClick} id='btn'>打豆豆</button>
+        </div>)
+    }
+
+}
+
+class CounterX extends React.Component {
+
+    //props接收新值时   render 也会执行
+    render(props) {
+        console.log("子组件 生命周期钩子函数 当新接收 props时 会执行 render")
+        return <h1 id='LICSLAN'>统计打豆豆次数: {this.props.count}</h1>
+    }
+
+
+    //注意： 要更新 setState 一定要放在 if条件中
+    componentDidUpdate(prevProps) {
+
+        console.log("子组件 生命周期钩子函数 当新接收 props时 会执行componentDidUpdate")
+
+
+        console.log("prevProps is :", prevProps, "当前props is：", this.props)
+        const title = document.getElementById('LICSLAN')
+
+
+        console.log("xxxxxxxxxxxxxx===", title.innerHTML)
+
+        if (prevProps !== this.props) {
+
+            this.setState({
+
+            })
+
+            //或者发送 Ajax 请求 
+        }
+    }
+}
+console.log(LifeCycleV2)
+
+
+
+
+//3.卸载阶段 执行时机 组件从页面消失
+//钩子函数 componentWillUnmount()   比如执行清理工作  清理定时器
+
+class LifeCycleV3 extends React.Component {
+
+    constructor() {
+        super()
+        this.state = {
+            count: 0
+        }
+    }
+
+    handleClick = () => {
+
+        //state 更新时   render 也会执行
+        this.setState({
+            count: this.state.count + 1
+        })
+
+        //此时 forUpdate()时 render 也会执行
+        //this.forceUpdate()
+    }
+
+    render() {
+
+        console.log("属性state 更新时 生命周期钩子函数 render会执行render")
+        return (<div>
+
+            {
+                this.state.count > 3 ? (<p>豆豆都打完了 ~~</p>) : (
+                    <CounterY count={this.state.count}></CounterY>
+                )
+            }
+
+            <button onClick={this.handleClick} id='btn'>打豆豆</button>
+        </div>)
+    }
+
+}
+
+class CounterY extends React.Component {
+
+    componentDidMount() {
+        this.timeId = setInterval(() => {
+            console.log("定时器正在执行~~~~")
+        }, 500);
+    }
+
+    //props接收新值时   render 也会执行
+    render(props) {
+        console.log("子组件 生命周期钩子函数 当新接收 props时 会执行 render")
+        return <h1 id='LICSLAN'>统计打豆豆次数: {this.props.count}</h1>
+    }
+
+
+    //注意： 要更新 setState 一定要放在 if条件中
+    componentDidUpdate(prevProps) {
+
+        console.log("子组件 生命周期钩子函数 当新接收 props时 会执行componentDidUpdate")
+
+
+        console.log("prevProps is :", prevProps, "当前props is：", this.props)
+        const title = document.getElementById('LICSLAN')
+
+
+        console.log("xxxxxxxxxxxxxx===", title.innerHTML)
+
+        if (prevProps !== this.props) {
+
+            this.setState({
+
+            })
+
+            //或者发送 Ajax 请求 
+        }
+    }
+
+
+    //组件从页面消失时 就会执行
+    componentWillUnmount() {
+        console.log("组件从页面小时 count>3 时 执行 ")
+        //清理定时器
+        clearInterval(this.timeId)
+        console.log("===================定时器被清理了==============================")
+    }
+}
+console.log(LifeCycleV3)
+
+
+
+
+
+
+
+
+//7.组件复用场景    如果组件中的部分功能相似或者相同  如何处理呢  复用组件的状态逻辑 state & 操作state的方法  高阶组件
+//两种方式处理  1.render props模式  2 高阶组件 完全利用react自身特点的编码技巧 演化而成的固定模式 写法
+
+//1.render props 模式  封装 mouse 组件
+class Mouse extends React.Component {
+
+    //鼠标位置state 
+    state = {
+        x: 0,
+        y: 0
+    }
+
+    //鼠标移动事件处理程序
+    handleMouseMove = (e) => {
+
+        this.setState({
+            x: e.clientX,
+            y: e.clientY
+        })
+    }
+
+    //监听鼠标移动事件 创建时使用
+    componentDidMount() {
+
+        window.addEventListener('mousemove', this.handleMouseMove)
+    }
+
+    //推荐在组件卸载时移除事件绑定 自己加的事件 需要处理  非react自己实现的需要移除
+    componentWillUnmount() {
+        window.removeEventListener('mousemove', this.handleMouseMove)
+    }
+
+    render() {
+        //将组件内部的属性  暴露到外部
+        //return this.props.render(this.state)
+        return this.props.children(this.state)
+    }
+}
+
+//属性校验
+Mouse.propTypes = {
+    children: PropTypes.func.isRequired
+}
+
+class Lin extends React.Component {
+    render() {
+        return (<div>
+            <h1>render props 模式</h1>
+
+            <Mouse render={(mouse) => {
+                return <p>鼠标的位置 ： {mouse.x}, {mouse.y}</p>
+            }}></Mouse>
+
+
+            <Mouse>{
+
+                mouse => { return (<p>鼠标的位置 ： {mouse.x}, {mouse.y}</p>) }
+            }
+
+            </Mouse>
+
+            {/* 猫捉老鼠的功能 */}
+            <Mouse render={(mouse) => {
+                return <img src={img} alt="star" style={{
+                    position: 'absolute',
+                    top: mouse.y - 50,
+                    left: mouse.x - 30
+                }} />
+            }}></Mouse>
+
+        </div>)
+    }
+}
+
+console.log(Lin)
+
+//换成 children 更好理解   Context 中的用法就是render模式 <Consumer></Consumer>  代码优化的地方  1.可以添加 props 校验  2.组件卸载时 解除mouse move事件
+class Linchildren extends React.Component {
+    render() {
+        return (<div>
+            <h1>render props 模式</h1>
+
+            {/* children 方式 */}
+            <Mouse>
+
+                {(mouse) => <p>鼠标的位置 ： {mouse.x}, {mouse.y}</p>}
+
+            </Mouse>
+
+            {/* 猫捉老鼠的功能  children 方式 */}
+            <Mouse>
+                {
+                    (mouse) => {
+                        return (
+                            <img src={img} alt='start' style={
+                                {
+                                    position: 'absolute',
+                                    top: mouse.y - 50,
+                                    left: mouse.x - 30
+                                }
+                            } />
+                        )
+                    }
+                }
+            </Mouse>
+        </div>)
+    }
+}
+console.log(Linchildren)
+
+
+
+//2.组件 High-Order-component 是一个函数 接收要包装的组件 返回增强后的组件
+//高阶组件内部创建一个类组件 在这个类组件中提供复用的状态逻辑代码  通过props将复用的状态传递给被包装组件WrappedComponent
+//创建函数  
+//a.名称约定以with 开头 
+//b.指定函数参数  参数应该以大写字母开头（作为要渲染的组件） 
+//c.在函数内部创建一个类组件  提供复用的状态逻辑代码
+//d.在该组件中，渲染参数组件， 同时将状态通过props传递给参数组件
+
+function withMouse(WarppedComponent) {
+
+    //此组件提供复用状态的逻辑
+    class Mouse extends React.Component {
+        //鼠标状态
+        state = {
+            x: 0,
+            y: 0
+        }
+
+        handleMouseMove = (e) => {
+            this.setState({
+                x: e.clientX,
+                y: e.clientY
+            })
+        }
+
+
+        //控制鼠标绑定事件
+        componentDidMount() {
+
+            window.addEventListener('mousemove', this.handleMouseMove)
+
+        }
+
+        //解绑鼠标事件
+        componentWillUnmount() {
+            Window.removeEventListener('mousemove', this.handleMouseMove)
+        }
+
+        render() {
+            console.log("=========xxxxxxxxxxx=========",this.props)
+            //props state 一起传递 避免 props丢失问题
+            return <WarppedComponent {...this.state} {...this.props}></WarppedComponent>;
+        }
+    }
+
+    //设置displayName
+    Mouse.displayName = `LICSLAN-${getDisPlayName(WarppedComponent)}`
+
+    return Mouse
+}
+
+//获取disPlayName 
+function getDisPlayName(WarppedComponent) {
+    return WarppedComponent.displayName || WarppedComponent.name || 'defaultName'
+}
+
+//测试高阶组件   参数作为参数传入
+const Position = props => {
+    console.log("The props is =========>", props)
+    return (
+        <p>
+            鼠标当前的位置： (X: {props.x}, Y: {props.y})
+        </p>
+    )
+}
+
+const Move = props => (
+    <img src={img} alt="xx" style={{
+        position: 'absolute',
+        top: props.y - 45,
+        left: props.x - 30
+    }} />
+
+)
+
+
+//获取增强后的组件
+const MousePosition = withMouse(Position)
+const MovePic = withMouse(Move)
+
+//渲染增强后的组件
+class HighComponent extends React.Component {
+    render() {
+        return (<div>
+            <h1>高阶组件</h1>
+            <MousePosition a={1} />
+            <MovePic />
+        </div>)
+    }
+}
 
 
 
@@ -737,7 +1183,12 @@ TestV4.defaultProps = {
 
 
 
-
+//8.React 原理揭秘   
+//a.setState 更新是异步的
+//b.知道JSX转发过程
+//c.知道React更新机制
+//d.对组件进行性能优化
+//f.虚拟DOM & Diff算法
 
 
 
@@ -755,20 +1206,20 @@ TestV4.defaultProps = {
 //ReactDOM.render(list, document.getElementById('root'))
 //React团队在3月29日新推出了React v18.0版本，现在npm 默认的就是18版本，而React 18 不再支持 ReactDOM.render， 使用createRoot
 
-//1.Hello 组件使用 
+//1.Hello 组件使用
 //createRoot(document.getElementById('root')).render(<Hello />)
 
 //2.App 组件使用 小练习  主要设计受控组件使用  setState 赋值 等功能   map 遍历
 //createRoot(document.getElementById('root')).render(<App />)
 
 
-//3.组件 传值 props 使用   类组件 Test  函数组件 TestV2 传递参数类型不做限制 String Number Objec Function JXS...  props只能读 不能写  
+//3.组件 传值 props 使用   类组件 Test  函数组件 TestV2 传递参数类型不做限制 String Number Objec Function JXS...  props只能读 不能写
 //注意：使用类组件时 如果写了构造函数  应该将props传递给super() 否则无法在构造函数中获取到props  undefind
 //createRoot(document.getElementById('root')).render(<Test name="LICSLAN" age={19} />)
 //createRoot(document.getElementById('root')).render(<TestV2 name="LICSLANV2" age={20} colors={['a', 'read', 'green']} fn={() => { console.log("==function test==") }} tag={<p>xxxx</p>} />)
 
 
-//4.组件参数传递 
+//4.组件参数传递
 //4.1 父传子
 //createRoot(document.getElementById('root')).render(<Parent />)
 
@@ -781,12 +1232,25 @@ TestV4.defaultProps = {
 //4.4 跨组件传递
 // createRoot(document.getElementById('root')).render(<AppList />)
 
-//5.1 props  children 
+//5.1 props  children
 //createRoot(document.getElementById('root')).render(<TestV3><p>I'm the children node</p></TestV3>)
 
 //5.2 propTypes   Failed prop type: Invalid prop `colors` of type `number` supplied to `TestV4`, expected `array`.  arr.map is not a function
 //createRoot(document.getElementById('root')).render(<TestV4 colors={18}/>)
-createRoot(document.getElementById('root')).render(<TestV4 colors={[18, 19]} fn={()=>{console.log("pls print LICSLAN")}} a={1000}/>)
+//createRoot(document.getElementById('root')).render(<TestV4 colors={[18, 19]} fn={()=>{console.log("pls print LICSLAN")}} a={1000}/>)
+
+
+//6.Life cycle understanding
+//6.1 createRoot(document.getElementById('root')).render(<LifeCycle />)
+//6.2 createRoot(document.getElementById('root')).render(<LifeCycleV2 />)
+//6.3 createRoot(document.getElementById('root')).render(<LifeCycleV3 />)
+
+
+//7.组件复用 props render模式   高阶组件 High order component(包装模式增强组件功能)
+// createRoot(document.getElementById('root')).render(<Lin />)
+// createRoot(document.getElementById('root')).render(<Linchildren />)
+createRoot(document.getElementById('root')).render(<HighComponent />)
+
 
 
 //ReactDOM.render(<Hello />, document.getElementById('root'))
