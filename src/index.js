@@ -3,7 +3,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import PropTypes from 'prop-types'
 import img from './images/pic.jpg'
-import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Link, Routes, useNavigate } from 'react-router-dom'
 
 
 //React study proccess record and for review in the future.
@@ -1233,7 +1233,7 @@ class StateUnderstanding extends React.Component {
                 //componentUpdate 钩子函数相似这里触发时机  dom渲染完成后触发发
                 console.log("状态更新完成", this.state.count)
                 console.log("xxxxxxxxxxx", document.getElementById('title').innerHTML)
-                document.title = "modify title "+ this.state.count
+                document.title = "modify title " + this.state.count
             })
         console.log("state.count: ", this.state.count)
 
@@ -1264,7 +1264,7 @@ console.log(StateUnderstanding)
 class TimeTest extends React.Component {
     state = {
         count: 0,
-        number:0
+        number: 0
     }
     handleClick = () => {
         console.log("=========================")
@@ -1279,23 +1279,23 @@ class TimeTest extends React.Component {
         console.log("=========================")
         this.setState(state => {
             return {
-                number: Math.floor(Math.random()*5)
+                number: Math.floor(Math.random() * 5)
             }
         })
     }
 
 
     //最新的props  最新的state  避免不必要的重新渲染   shouldComponentUpdate 先执行  再执行 render
-    shouldComponentUpdate(nextProps,nextState){
+    shouldComponentUpdate(nextProps, nextState) {
 
-        console.log("nextState, nextProps, thisState=====", nextState,nextProps,this.state)
+        console.log("nextState, nextProps, thisState=====", nextState, nextProps, this.state)
         //false 阻止 render 渲染
         //return false
 
 
 
         //如果生成随机数前后2次相同的话 就控制不执行render()
-        if (this.state.number===nextState.number){
+        if (this.state.number === nextState.number) {
             return false
         }
 
@@ -1312,26 +1312,26 @@ class TimeTest extends React.Component {
             <br></br>
 
             {/* <h2>随机数：{this.state.number}</h2>   */}
-            <NumberTest number={this.state.number}/>
+            <NumberTest number={this.state.number} />
             <button onClick={this.handleNumber}>重新生成</button>
-           
+
         </div>)
     }
 }
 console.log(TimeTest)
 
-class NumberTest extends React.Component{
+class NumberTest extends React.Component {
 
 
-    shouldComponentUpdate(nextProps){
-        if(nextProps.number!==this.props.number){return true} 
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.number !== this.props.number) { return true }
         return false
 
     }
 
-    render(){
+    render() {
         console.log("子组件中的render~~~~~~")
-        return (<h2>随机数：{this.props.number}</h2>  )
+        return (<h2>随机数：{this.props.number}</h2>)
     }
 }
 
@@ -1340,10 +1340,10 @@ class NumberTest extends React.Component{
 //使用非常简单  创建组件时 改成  class TimeTest extends React.PureComponent 即可   纯组件内部的对比是浅层对比  shallow compare 
 //shallow compare  值类型对比 比较2个值是否相同即可   对于引用类型来说  只比较对象的引用地址是否相同
 //注意： state or props 属性为引用类型时  应该创建新数据 不要直接修改原数据！！！    引用类似推荐对比的时候是去创建新的对象哈 
-const object = {a:0}
+const object = { a: 0 }
 const newObj = object
 newObj.a = 5
-console.log("cvcvvsfdfdasfdsfd================",newObj===object)
+console.log("cvcvvsfdfdasfdsfd================", newObj === object)
 
 
 
@@ -1365,6 +1365,7 @@ console.log("cvcvvsfdfdasfdsfd================",newObj===object)
 //作用：让用户从一个视图(页面)导航到另一个视图(页面)  URL <===>与组件的对应关系
 //使用 <Router> 包裹整个应用  使用Link作为导航菜单  路由入口  
 //使用Route组件配置路由规则和要展示的组件  路由出口
+//Router组件  包裹整个应用  一个React应用只需要使用一次  常用的router HashRouter BrowerRouter
 
 const First = () => <h1>页面一内容</h1>
 const Home = () => <h1>页面Home内容</h1>
@@ -1376,6 +1377,7 @@ const TestRouter = () => (
         <div>
             <h1> React 路由基础 </h1>
             <br></br>
+            {/* 定义路由入口  导航链接 a 标签 */}
             <Link to='/first'> <h1>页面一</h1> </Link>
             <br></br>
             <Link to='/second'> <h1>页面二</h1> </Link>
@@ -1383,17 +1385,93 @@ const TestRouter = () => (
             <Routes>
                 <Route path='/first' element={<First />}></Route>
                 <Route path='/second' element={<Home />}></Route>
-                <Route path='/' element={<X/>}></Route>
+                <Route path='/' element={<X />}></Route>
             </Routes>
         </div>
     </Router>
 )
-
-    
-
-
 console.log(TestRouter, Route, Link)
 
+
+//编程式导航  通过JS代码实现页面跳转  history 由React路由提供 用于获取浏览器历史记录相关信息 this.props.history.push('/path_you_want_jump_to') V5 写法  
+//React router v6写法  参考官网 https://reactrouter.com/en/main/upgrading/v5  let navigate = useNavigate(); function handleClick() {navigate("/home");}
+
+
+//router v5 写法
+class LoginV5 extends React.Component {
+    loginJump = () => {
+        this.props.history.push('/home')
+    }
+
+    render() {
+        return (
+            <div>
+                <p>登录首页</p>
+                <button onClick={this.loginJump}>登录</button>
+            </div>
+        )
+    }
+}
+console.log(LoginV5)
+
+
+//V6写法
+function LoginV6() {
+    const navigate = useNavigate()
+    function loginJump() {
+        navigate("/home")
+    }
+    return (
+        <div>
+            <p>登录首页</p>
+            <button onClick={loginJump}>登录</button>
+        </div>
+    )
+}
+
+
+//v6写法 返回 不用history
+const HomeAdmin = () => {
+    let navigate = useNavigate()
+    return (
+        <div>
+            <h1>后台首页</h1>
+            <button onClick={() => navigate(-1)}>返回登录页面</button>
+        </div>
+    )
+}
+
+//函数组件哈
+function PageHome() {
+    return (
+        <div><h1>默认页面哈, can you see me when enter page first time?</h1></div>
+    )
+}
+
+//函数组件哈 不同写法都是函数组件
+const Nav = () => (
+    <Router>
+        <div>
+            <h1>编程式导航</h1>
+            <br></br>
+            <Link to='/login'> <h1>去登录</h1></Link>
+            <Link to='/'> <h1>xx</h1></Link>
+        </div>
+
+
+        {/* 默认情况react 是模糊匹配的 规则：只要pathname以path开头就会匹配成功 */}
+        <Routes>
+
+            {/* 给路由添加 exact 属性 就会变为精确匹配模式 */}
+
+            <Route exact path='/login' element={<LoginV6 />}></Route>
+            <Route path='/home' element={<HomeAdmin />}></Route>
+
+            {/* 默认路由 */}
+            <Route path='/' element={<PageHome />}></Route>
+        </Routes>
+    </Router>
+)
 
 
 
@@ -1461,7 +1539,15 @@ console.log(TestRouter, Route, Link)
 //createRoot(document.getElementById('root')).render(<HighComponent />)
 //createRoot(document.getElementById('root')).render(<StateUnderstanding />)
 //createRoot(document.getElementById('root')).render(<TimeTest tag={1} />)
-createRoot(document.getElementById('root')).render(<TestRouter />)
+
+
+
+//8.路由使用
+//createRoot(document.getElementById('root')).render(<TestRouter />)
+
+
+createRoot(document.getElementById('root')).render(<Nav />)
+
 
 
 
