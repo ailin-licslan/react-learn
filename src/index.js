@@ -3,6 +3,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import PropTypes from 'prop-types'
 import img from './images/pic.jpg'
+import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom'
 
 
 //React study proccess record and for review in the future.
@@ -1317,6 +1318,7 @@ class TimeTest extends React.Component {
         </div>)
     }
 }
+console.log(TimeTest)
 
 class NumberTest extends React.Component{
 
@@ -1355,6 +1357,49 @@ console.log("cvcvvsfdfdasfdsfd================",newObj===object)
 //3.父组件更新导致子组件更新 纯组件提升性能
 //4.虚拟DOM ==>  state + JSX
 //5.虚拟DOM 不是正在的DOM 虚拟DOM可以让react脱离浏览器的束缚 使其跨平台应用提供了保障  开发react 是面向虚拟DOM 开发  react native --> 安卓 / IOS 
+
+
+
+//REACT 路由使用
+//现代前端应用大多是SPA 单页面应用程序  也就是只有一个HTML页面的应用程序 因为用户体验更好 对服务器压力更小  所以受欢迎  为了有效的使用单个页面来管理原来多页面功能 前端路由应运而生
+//作用：让用户从一个视图(页面)导航到另一个视图(页面)  URL <===>与组件的对应关系
+//使用 <Router> 包裹整个应用  使用Link作为导航菜单  路由入口  
+//使用Route组件配置路由规则和要展示的组件  路由出口
+
+const First = () => <h1>页面一内容</h1>
+const Home = () => <h1>页面Home内容</h1>
+const X = () => <h1>React studying ~~~</h1>
+
+//v18 路由写法与之前的版本不一致需要注意
+const TestRouter = () => (
+    <Router>
+        <div>
+            <h1> React 路由基础 </h1>
+            <br></br>
+            <Link to='/first'> <h1>页面一</h1> </Link>
+            <br></br>
+            <Link to='/second'> <h1>页面二</h1> </Link>
+            <br></br>
+            <Routes>
+                <Route path='/first' element={<First />}></Route>
+                <Route path='/second' element={<Home />}></Route>
+                <Route path='/' element={<X/>}></Route>
+            </Routes>
+        </div>
+    </Router>
+)
+
+    
+
+
+console.log(TestRouter, Route, Link)
+
+
+
+
+
+
+
 
 
 
@@ -1415,7 +1460,8 @@ console.log("cvcvvsfdfdasfdsfd================",newObj===object)
 // createRoot(document.getElementById('root')).render(<Linchildren />)
 //createRoot(document.getElementById('root')).render(<HighComponent />)
 //createRoot(document.getElementById('root')).render(<StateUnderstanding />)
-createRoot(document.getElementById('root')).render(<TimeTest tag={1} />)
+//createRoot(document.getElementById('root')).render(<TimeTest tag={1} />)
+createRoot(document.getElementById('root')).render(<TestRouter />)
 
 
 
